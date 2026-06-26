@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perancangan Detail FTTH & BoM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1650px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header .icon-logo {
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        header h1 { font-size: 22px; color: var(--text-main); }
+        header p { font-size: 13px; color: var(--text-muted); }
+
+        .designer-badge {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 420px 1fr;
+            }
+        }
+
+        /* Card Form & Table */
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--background);
+            padding-bottom: 12px;
+        }
+
+        /* Form Sections */
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin: 15px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
+
+        .input-group { position: relative; }
+        .input-group-addon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-muted); }
+
+        .btn {
+            width: 100%; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s; margin-top: 15px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #059669; }
+
+        /* Table Styling */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+        th { background-color: #f8fafc; color: #334155; padding: 10px; font-weight: 600; border-bottom: 2px solid var(--border); border-right: 1px solid #e2e8f0; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; vertical-align: top; }
+        tr:hover td { background-color: #f8fafc; }
+        .no-data { text-align: center; color: var(--text-muted); padding: 40px !important; font-size: 13px; }
+
+        /* Dashboard Total Biaya Footer */
+        .total-box {
+            background: #0f172a; color: #fff; padding: 20px; border-radius: 8px;
+            margin-top: 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .total-box h3 { font-size: 13px; font-weight: 500; color: #94a3b8; }
+        .total-box .price { font-size: 22px; font-weight: 700; color: #34d399; }
+
+        .b-text { font-weight: 600; color: #1e293b; }
+        .b-coord { font-family: monospace; color: #0284c7; font-size: 10px; }
+
+        /* Elemen khusus tanda tangan yang hanya muncul saat cetak PDF */
+        #pdf-signature {
+            display: none;
+            margin-top: 40px;
+            justify-content: flex-end;
+            text-align: center;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-left">
+            <div class="icon-logo"><i class="fa-solid fa-diagram-project"></i></div>
+            <div>
+                <h1>Sistem Perancangan & Inventarisasi FTTH</h1>
+                <p>Input Komponen Jaringan Komplit: Tiang, Kabel, ODC, ODP, Homepass, serta Kalkulasi Biaya Proyek</p>
+            </div>
+        </div>
+        <div class="designer-badge">
+            <span style="color: var(--text-muted); font-size: 11px; block-size: auto;">Lead Network Planner:</span><br>
+            <strong>Richard S Mambor</strong>
+        </div>
+    </header>
+
+    <div class="main-grid">
+        <div class="card" id="formPanel">
+            <div class="card-title">
+                <i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary)"></i>
+                Form Master Input Desain
+            </div>
+            <form id="ftthMasterForm">
+                
+                <div class="section-title"><i class="fa-solid fa-tower-broadcast"></i> 1. Data Tiang</div>
+                <div class="form-group"><label>Lokasi Penempatan Tiang</label><input type="text" id="tiangLokasi" class="form-control" placeholder="Nama Jalan / Blok" required></div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Latitude Tiang</label><input type="text" id="tiangLat" class="form-control" placeholder="-6.12345" required></div>
+                    <div class="form-group"><label>Longitude Tiang</label><input type="text" id="tiangLng" class="form-control" placeholder="106.12345" required></div>
+                </div>
+                <div class="form-group"><label>Harga Pengadaan & Jasa Tiang</label><input type="number" id="tiangHarga" class="form-control" placeholder="0" min="0" required></div>
+
+                <div class="section-title"><i class="fa-solid fa-route"></i> 2. Data Kabel</div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nama/Tipe Kabel</label><input type="text" id="kabelNama" class="form-control" placeholder="Contoh: Feeder 24C" required></div>
+                    <div class="form-group"><label>Titik Penarikan</label><input type="text" id="kabelTitik" class="form-control" placeholder="Contoh: STO - ODC" required></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Panjang Kabel</label><div class="input-group"><input type="number" id="kabelPanjang" class="form-control" placeholder="0" min="0" required><span class="input-group-addon">Meter</span></div></div>
+                    <div class="form-group"><label>Biaya Kabel (Jasa+Mat)</label><input type="number" id="kabelBiaya" class="form-control" placeholder="0" min="0" required></div>
+                </div>
+
+                <div class="section-title"><i class="fa-solid fa-box"></i> 3. Data ODC</div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nama/ID ODC</label><input type="text" id="odcNama" class="form-control" placeholder="ODC-KOTA-FA" required></div>
+                    <div class="form-group"><label>Lokasi ODC</label><input type="text" id="odcLokasi" class="form-control" placeholder="Lokasi Penempatan" required></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Latitude ODC</label><input type="text" id="odcLat" class="form-control" placeholder="-6.12345" required></div>
+                    <div class="form-group"><label>Longitude ODC</label><input type="text" id="odcLng" class="form-control" placeholder="106.12345" required></div>
+                </div>
+                <div class="form-group"><label>Biaya Perangkat ODC</label><input type="number" id="odcBiaya" class="form-control" placeholder="0" min="0" required></div>
+
+                <div class="section-title"><i class="fa-solid fa-map-pin"></i> 4. Data ODP</div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nama/ID ODP</label><input type="text" id="odpNama" class="form-control" placeholder="ODP-KOTA-01" required></div>
+                    <div class="form-group"><label>Lokasi ODP</label><input type="text" id="odpLokasi" class="form-control" placeholder="Lokasi Penempatan" required></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Latitude ODP</label><input type="text" id="odpLat" class="form-control" placeholder="-6.12345" required></div>
+                    <div class="form-group"><label>Longitude ODP</label><input type="text" id="odpLng" class="form-control" placeholder="106.12345" required></div>
+                </div>
+                <div class="form-group"><label>Biaya Pasang ODP</label><input type="number" id="odpBiaya" class="form-control" placeholder="0" min="0" required></div>
+
+                <div class="section-title"><i class="fa-solid fa-house-chimney"></i> 5. Data Rumah (Homepass)</div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Nama/No Rumah</label><input type="text" id="rumahNama" class="form-control" placeholder="Kav 12" required></div>
+                    <div class="form-group"><label>Alamat Rumah</label><input type="text" id="rumahLokasi" class="form-control" placeholder="Nama Blok" required></div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Latitude Rumah</label><input type="text" id="rumahLat" class="form-control" placeholder="-6.12345" required></div>
+                    <div class="form-group"><label>Longitude Rumah</label><input type="text" id="rumahLng" class="form-control" placeholder="106.12345" required></div>
+                </div>
+                <div class="form-group"><label>Biaya Drop Core Instalasian</label><input type="number" id="rumahBiaya" class="form-control" placeholder="0" min="0" required></div>
+
+                <button type="submit" class="btn"><i class="fa-solid fa-plus"></i> Tambahkan ke Rekapitulasi</button>
+            </form>
+        </div>
+
+        <div class="card" id="reportArea">
+            <div class="card-title" style="justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--success)"></i>
+                    Laporan Spesifikasi Hasil Rancangan Detil (BoM FTTH)
+                </div>
+                <button type="button" class="btn btn-success" id="btnPdf" style="width: auto; margin: 0; padding: 8px 15px;">
+                    <i class="fa-solid fa-file-pdf"></i> Unduh Laporan PDF
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="masterTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 30px; text-align: center;">No</th>
+                            <th colspan="2" style="background-color: #f0fdf4;">1. Objek Tiang</th>
+                            <th colspan="3" style="background-color: #fef8ec;">2. Objek Kabel</th>
+                            <th colspan="2" style="background-color: #eff6ff;">3. Perangkat ODC</th>
+                            <th colspan="2" style="background-color: #faf5ff;">4. Perangkat ODP</th>
+                            <th colspan="2" style="background-color: #fff1f2;">5. Target Homepass</th>
+                            <th rowspan="2" style="background-color: #f8fafc; border-left: 2px solid var(--border);">Sub Total Item</th>
+                        </tr>
+                        <tr>
+                            <th style="background-color: #f0fdf4;">Lokasi & GPS</th><th style="background-color: #f0fdf4;">Harga</th>
+                            <th style="background-color: #fef8ec;">Spesifikasi</th><th style="background-color: #fef8ec;">Panjang</th><th style="background-color: #fef8ec;">Biaya</th>
+                            <th style="background-color: #eff6ff;">ID / Lokasi</th><th style="background-color: #eff6ff;">Biaya</th>
+                            <th style="background-color: #faf5ff;">ID / Lokasi</th><th style="background-color: #faf5ff;">Biaya</th>
+                            <th style="background-color: #fff1f2;">Penghuni / GPS</th><th style="background-color: #fff1f2;">Biaya Drop</th>
+                        </tr>
+                    </thead>
+                    <tbody id="masterTableBody">
+                        <tr>
+                            <td colspan="13" class="no-data">Belum ada data perencanaan terinput. Silakan isi form.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total-box">
+                <div>
+                    <h3>TOTAL ESTIMASI ANGGARAN KESELURUHAN (BoM FTTH)</h3>
+                    <p style="color: #94a3b8; font-size: 11px; margin-top: 2px;">Diperiksa & disahkan oleh Richard S Mambor</p>
+                </div>
+                <div class="price" id="grandTotalLabel">Rp 0</div>
+            </div>
+
+            <div id="pdf-signature">
+                <div>
+                    <p>Dibuat Oleh,</p>
+                    <br><br><br>
+                    <p><u><b>Richard S Mambor</b></u></p>
+                    <p style="color: var(--text-muted); font-size: 11px;">Lead Network Planner</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let grandTotalProject = 0;
+
+    const formatRupiah = (angka) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    };
+
+    // Sinkronisasi Input Data ke Tabel
+    document.getElementById('ftthMasterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const tiangLokasi = document.getElementById('tiangLokasi').value;
+        const tiangLat = document.getElementById('tiangLat').value;
+        const tiangLng = document.getElementById('tiangLng').value;
+        const tiangHarga = parseFloat(document.getElementById('tiangHarga').value) || 0;
+
+        const kabelNama = document.getElementById('kabelNama').value;
+        const kabelTitik = document.getElementById('kabelTitik').value;
+        const kabelPanjang = parseFloat(document.getElementById('kabelPanjang').value) || 0;
+        const kabelBiaya = parseFloat(document.getElementById('kabelBiaya').value) || 0;
+
+        const odcNama = document.getElementById('odcNama').value;
+        const odcLokasi = document.getElementById('odcLokasi').value;
+        const odcLat = document.getElementById('odcLat').value;
+        const odcLng = document.getElementById('odcLng').value;
+        const odcBiaya = parseFloat(document.getElementById('odcBiaya').value) || 0;
+
+        const odpNama = document.getElementById('odpNama').value;
+        const odpLokasi = document.getElementById('odpLokasi').value;
+        const odpLat = document.getElementById('odpLat').value;
+        const odpLng = document.getElementById('odpLng').value;
+        const odpBiaya = parseFloat(document.getElementById('odpBiaya').value) || 0;
+
+        const rumahNama = document.getElementById('rumahNama').value;
+        const rumahLokasi = document.getElementById('rumahLokasi').value;
+        const rumahLat = document.getElementById('rumahLat').value;
+        const rumahLng = document.getElementById('rumahLng').value;
+        const rumahBiaya = parseFloat(document.getElementById('rumahBiaya').value) || 0;
+
+        const subTotalBaris = tiangHarga + kabelBiaya + odcBiaya + odpBiaya + rumahBiaya;
+
+        const tableBody = document.getElementById('masterTableBody');
+        const noDataRow = tableBody.querySelector('.no-data');
+        if (noDataRow) tableBody.innerHTML = '';
+
+        const nextNo = tableBody.rows.length + 1;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="text-align: center;"><b>${nextNo}</b></td>
+            <td><span class="b-text">${tiangLokasi}</span><br><span class="b-coord">${tiangLat}, ${tiangLng}</span></td>
+            <td>${formatRupiah(tiangHarga)}</td>
+            <td><span class="b-text">${kabelNama}</span><br><small style="color:var(--text-muted)">Rute: ${kabelTitik}</small></td>
+            <td style="text-align: center;">${kabelPanjang.toLocaleString('id-ID')} m</td>
+            <td>${formatRupiah(kabelBiaya)}</td>
+            <td><span class="b-text">${odcNama}</span><br>${odcLokasi}<br><span class="b-coord">${odcLat}, ${odcLng}</span></td>
+            <td>${formatRupiah(odcBiaya)}</td>
+            <td><span class="b-text">${odpNama}</span><br>${odpLokasi}<br><span class="b-coord">${odpLat}, ${odpLng}</span></td>
+            <td>${formatRupiah(odpBiaya)}</td>
+            <td><span class="b-text">${rumahNama}</span><br>${rumahLokasi}<br><span class="b-coord">${rumahLat}, ${rumahLng}</span></td>
+            <td>${formatRupiah(rumahBiaya)}</td>
+            <td style="border-left: 2px solid var(--border); background-color: #f8fafc; font-weight: 700;">${formatRupiah(subTotalBaris)}</td>
+        `;
+
+        tableBody.appendChild(tr);
+
+        grandTotalProject += subTotalBaris;
+        document.getElementById('grandTotalLabel').innerText = formatRupiah(grandTotalProject);
+
+        document.getElementById('ftthMasterForm').reset();
+    });
+
+    // Fungsi Mengonversi HTML ke Laporan PDF Resmi
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        const element = document.getElementById('reportArea');
+        const downloadButton = document.getElementById('btnPdf');
+        const signatureBlock = document.getElementById('pdf-signature');
+        
+        // Sembunyikan tombol download & aktifkan blok tanda tangan agar masuk ke berkas cetak PDF
+        downloadButton.style.display = 'none';
+        signatureBlock.style.display = 'flex';
+
+        // Aturan tata letak halaman PDF (Landscape agar tabel muat sempurna)
+        const opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     'Laporan_Perancangan_FTTH_Richard_S_Mambor.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a3', orientation: 'landscape' }
+        };
+
+        // Eksekusi Pembuatan PDF
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Kembalikan status layout web ke semula setelah proses ekspor selesai
+            downloadButton.style.style = 'block';
+            downloadButton.style.display = 'inline-flex';
+            signatureBlock.style.display = 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
